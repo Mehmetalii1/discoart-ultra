@@ -1,45 +1,84 @@
-import { useState } from 'react';
+import { v2 as cloudinary } from 'cloudinary';
+import formidable from 'formidable';
+import fs from 'fs';
+import { join } from 'path';
 
-export default function UploadPage() {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [mesaj, setMesaj] = useState('');
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
+// Cloudinary Ayarları
+cloudinary.config({
+  cloud_name: 'dq13podrt',
+  api_key: '126927757859478',
+  api_secret: 'bI-eYkb7WdM1eY-aJ6aiv5iXdbE'
+});
+
+// Rastgele skor üreten yardımcı fonksiyon
+function generateScores() {
+  return {
+    anatomi: Math.floor(Math.random() * 41) + 60, // 60-100 arası
+    perspektif: Math.floor(Math.random() * 41) + 60,
+    renkKullanimi: Math.floor(Math.random() * 41) + 60,
+    kompozisyon: Math.floor(Math.random() * 41) + 60,
+    isikGolgeleme: Math.floor(Math.random() * 41) + 60,
+    ifadeAtmosfer: Math.floor(Math.random() * 41) + 60,
+    cizgiKalitesi: Math.floor(Math.random() * 41) + 60,
+    yaraticilik: Math.floor(Math.random() * 41) + 60,
+    detaylandirma: Math.floor(Math.random() * 41) + 60
   };
+}
 
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      setMesaj('Lütfen bir dosya seçin.');
-      return;
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Sadece POST isteklerine izin var.' });
+  }
+
+  const form = new formidable.IncomingForm();
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Dosya işleme hatası.' });
     }
 
-    const formData = new FormData();
-    formData.append('file', selectedFile);
+    const file = files.file;
+    if (!file) {
+      return res.status(400).json({ error: 'Dosya bulunamadı.' });
+    }
 
     try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
+      const uploadResult = await cloudinary.uploader.upload(file.filepath, {
+        folder: 'discoart-ultra'
       });
 
-      if (res.ok) {
-        setMesaj('Yükleme başarılı!');
-      } else {
-        setMesaj('Yükleme başarısız.');
-      }
-    } catch (err) {
-      console.error(err);
-      setMesaj('Sunucu hatası.');
-    }
-  };
+      // Kullanıcının memory.json'a kaydı
+      const memoryPath = join(process.cwd(), 'data', 'memory.json');
+      const memoryData = JSON.parse(fs.readFileSync(memoryPath, 'utf-8'));
 
-  return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-      <h1 style={{ fontSize: "2.5rem", marginBottom: "20px", color: "#6A0DAD" }}>Yeni Resim Yükle</h1>
-      <input type="file" onChange={handleFileChange} accept="image/*" style={{ marginBottom: "20px" }} />
-      <button onClick={handleUpload}>Yükle</button>
-      {mesaj && <p style={{ marginTop: "20px", color: "lightgreen" }}>{mesaj}</p>}
-    </div>
-  );
+      const userId = 'testUserId'; // Şu an tek kullanıcı var
+
+      if (!memoryData.kullanicilar[userId]) {
+        return res.status(404).json({ error: 'Kullanıcı bulunamadı.' });
+      }
+
+      const newEntry = {
+        url: uploadResult.secure_url,
+        yuklemeTarihi: new Date().toISOString(),
+        skorlar: generateScores()
+      };
+
+      memoryData.kullanicilar[userId].resimler = memoryData.kullanicilar[userId].resimler || [];
+      memoryData.kullanicilar[userId].resimler.push(newEntry);
+
+      fs.writeFileSync(memoryPath, JSON.stringify(memoryData, null, 2));
+
+      return res.status(200).json({ message: 'Yükleme ve skor kaydı başarılı!', url: uploadResult.secure_url });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Cloudinary veya kayıt hatası.' });
+    }
+  });
 }
