@@ -1,4 +1,18 @@
-{
-  "kullanicilar": {
+function updateMemory(userId, newData) {
+  try {
+    const data = fs.readFileSync(memoryFilePath, 'utf-8');
+    const json = JSON.parse(data);
+
+    // Yeni kullanıcıyı ekliyoruz, eğer kullanıcı yoksa
+    if (!json.kullanicilar[userId]) {
+      json.kullanicilar[userId] = newData;
+    } else {
+      // Kullanıcı mevcutsa, veriyi güncelliyoruz
+      json.kullanicilar[userId] = {...json.kullanicilar[userId], ...newData};
+    }
+
+    fs.writeFileSync(memoryFilePath, JSON.stringify(json, null, 2));
+  } catch (error) {
+    console.error('Hafıza yazma hatası:', error);
   }
 }
