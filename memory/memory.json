@@ -1,18 +1,41 @@
+const fs = require('fs');
+const path = require('path');
+
+const memoryFilePath = path.join(__dirname, '../memory/memory.json');
+
+// Kullanıcının hafıza verisini okuma
+function getMemory(userId) {
+  try {
+    const data = fs.readFileSync(memoryFilePath, 'utf-8');
+    const json = JSON.parse(data);
+    return json.kullanicilar[userId] || null;
+  } catch (error) {
+    console.error('Hafıza okuma hatası:', error);
+    return null;
+  }
+}
+
+// Kullanıcının hafıza verisini güncelleme veya yeni kullanıcı ekleme
 function updateMemory(userId, newData) {
   try {
     const data = fs.readFileSync(memoryFilePath, 'utf-8');
     const json = JSON.parse(data);
 
-    // Yeni kullanıcıyı ekliyoruz, eğer kullanıcı yoksa
+    // Kullanıcı verisi yoksa yeni ekleyelim
     if (!json.kullanicilar[userId]) {
       json.kullanicilar[userId] = newData;
     } else {
-      // Kullanıcı mevcutsa, veriyi güncelliyoruz
-      json.kullanicilar[userId] = {...json.kullanicilar[userId], ...newData};
+      // Kullanıcı mevcutsa veriyi güncelle
+      json.kullanicilar[userId] = { ...json.kullanicilar[userId], ...newData };
     }
 
-    fs.writeFileSync(memoryFilePath, JSON.stringify(json, null, 2));
+    fs.writeFileSync(memoryFilePath, JSON.stringify(json, null, 2)); // Veriyi dosyaya kaydet
   } catch (error) {
     console.error('Hafıza yazma hatası:', error);
   }
 }
+
+module.exports = {
+  getMemory,
+  updateMemory
+};
