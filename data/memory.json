@@ -9,10 +9,10 @@
         "favoriTarz": "Ekspresyonist"
       },
       "teknikSeviye": {
-        "perspektif": 50,
-        "anatomi": 60,
-        "ifade": 45,
-        "kompozisyon": 55
+        "perspektif": 1,
+        "anatomi": 1,
+        "ifade": 1,
+        "kompozisyon": 1
       },
       "gelisimKaydi": [],
       "moralTakibi": [],
