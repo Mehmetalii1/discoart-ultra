@@ -1,27 +1,12 @@
 const express = require('express');
-const app = express();
+const routes = require('./routes/memoryRoutes');  // Buradaki yolu doğru yazdığından emin ol.
 
-// Route dosyalarını çağır
-const memoryRoutes = require('./routes/memoryRoutes');
-const sketchRoutes = require('./routes/sketchRoutes');
-const taskRoutes = require('./routes/taskRoutes');
-const reportRoutes = require('./routes/reportRoutes');
+const app = express();
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(routes);  // Rotaların doğru şekilde dahil edildiği satır.
 
-// Ana route bağlantıları
-app.use('/memory', memoryRoutes);
-app.use('/sketch', sketchRoutes);
-app.use('/task', taskRoutes);
-app.use('/report', reportRoutes);
-
-// Hatalı istekler için yakalama
-app.use((req, res) => {
-  res.status(404).send({ error: 'Endpoint bulunamadı.' });
-});
-
-// Sunucuyu başlat
-const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`DiscoArt Ultra Server çalışıyor: http://localhost:${port}`);
+  console.log(`Sunucu ${port} portunda çalışıyor.`);
 });
