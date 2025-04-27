@@ -1,6 +1,5 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import bcrypt from 'bcryptjs';
 
 export default function handler(req, res) {
   if (req.method !== 'POST') {
@@ -23,9 +22,7 @@ export default function handler(req, res) {
     return res.status(401).json({ error: 'Kullanıcı bulunamadı.' });
   }
 
-  const sifreDogruMu = bcrypt.compareSync(sifre, user.profil.sifre);
-
-  if (!sifreDogruMu) {
+  if (user.profil.sifre !== sifre) {
     return res.status(401).json({ error: 'Şifre yanlış.' });
   }
 
