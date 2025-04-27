@@ -1,0 +1,30 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Helvetica Neue', sans-serif;
+  background-color: #1C1C1C;
+  color: #EEEEEE;
+}
+
+a {
+  color: #6A0DAD;
+  text-decoration: none;
+}
+
+input, button {
+  background-color: #2E2E2E;
+  color: #EEEEEE;
+  border: none;
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 5px;
+}
+
+button {
+  background-color: #6A0DAD;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.8;
+}
