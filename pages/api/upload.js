@@ -1,6 +1,5 @@
 import { v2 as cloudinary } from 'cloudinary';
 import formidable from 'formidable';
-import fs from 'fs';
 
 export const config = {
   api: {
