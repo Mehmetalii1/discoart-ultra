@@ -13,7 +13,7 @@ export default function handler(req, res) {
   }
 
   const dosyaYolu = join(process.cwd(), 'data', 'memory.json');
-  const jsonData = readFileSync(dosyaYolu);
+  const jsonData = readFileSync(dosyaYolu, 'utf-8');
   const data = JSON.parse(jsonData);
 
   const user = Object.values(data.kullanicilar).find(u => u.profil.kullaniciAdi === kullaniciAdi);
