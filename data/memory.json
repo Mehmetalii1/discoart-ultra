@@ -3,7 +3,7 @@
     "testUserId": {
       "profil": {
         "kullaniciAdi": "test",
-        "sifre": "$2a$10$sOJxFcUAFxJZ7P5oyf6Lo.7Ai7Uq8ZfZCWr2VxfhxJoCqGW/k04fq",
+        "sifre": "123456",
         "ad": "Test Kullanıcısı",
         "yas": 20,
         "favoriTarz": "Ekspresyonist"
